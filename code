@@ -1,0 +1,75 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.regex.*;
+
+public class login extends JFrame {
+    private JPanel panel;
+    private JTextField usernameField;
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JCheckBox iAgreeToTermsCheckBox;
+    private JButton loginButton;
+    private JLabel warning;
+    private JLabel pic;
+    private JLabel emailLabel;
+
+    public login() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(panel);
+        setSize(500, 500);
+        setVisible(true);
+
+
+        usernameField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (usernameField.getText().length() < 5) {
+                    warning.setText("Username must have at least 5 characters.");
+                    usernameField.requestFocus();
+                } else {
+                    warning.setText("");
+                }
+            }
+        });
+
+        emailField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String emailRegex = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$";
+                Pattern pattern = Pattern.compile(emailRegex);
+                Matcher matcher = pattern.matcher(emailField.getText());
+                if (!matcher.matches()) {
+                    warning.setText("Invalid email address.");
+                    emailField.requestFocus();
+                } else {
+                    warning.setText("");
+                }
+            }
+        });
+
+        passwordField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String password = new String(passwordField.getPassword());
+                if (password.length() < 8 ||
+                        !password.matches(".*[A-Z].*") ||
+                        !password.matches(".*\\d.*")) {
+                    warning.setText("Password must be 8+ characters, with 1 uppercase and 1 number.");
+                    passwordField.requestFocus();
+                } else {
+                    warning.setText("");
+                }
+            }
+        });
+
+        iAgreeToTermsCheckBox.addItemListener(e -> loginButton.setEnabled(iAgreeToTermsCheckBox.isSelected()));
+
+        loginButton.addActionListener(e -> {
+            if (warning.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(panel, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(panel, "Please fix the errors before submitting.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+}
